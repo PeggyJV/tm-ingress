@@ -13,7 +13,7 @@ use ocular::{
     Coin,
 };
 
-use crate::common::docker_run;
+use crate::common::{docker_run, RPC_PORT};
 
 mod common;
 
@@ -48,6 +48,11 @@ fn happy_path() {
 
     run_single_node_test(container_name, Some(network_name), |sender_account: AccountInfo| async move {
         let mut chain_client = init_test_chain_client().await;
+
+        // wait for the chain or you will pull your hair out over a race condition
+        let temp_client = tendermint_rpc::HttpClient::new(format!("http://localhost:{}", RPC_PORT).as_str()).unwrap();
+        poll_for_first_block(&temp_client).await;
+
         let txm = chain_client.get_basic_tx_metadata().await.unwrap();
         let recipient = AccountInfo::new("");
         let response = chain_client
@@ -63,8 +68,6 @@ fn happy_path() {
             .await
             .unwrap();
 
-        println!("RESPONSE: {:?}", response);
-
         assert!(response.check_tx.code.is_ok(), "CheckTx error");
         assert!(response.deliver_tx.code.is_ok(), "DeliverTx error");
     });
@@ -74,9 +77,6 @@ async fn init_test_chain_client() -> ChainClient {
     let rpc_address = format!("http://localhost:{}", INGRESS_RPC_PORT);
     let rpc_client =
         tendermint_rpc::HttpClient::new(rpc_address.as_str()).expect("Could not create RPC");
-
-    // poll_for_first_block(&rpc_client).await;
-
     let grpc_address = format!("http://localhost:{}", GRPC_PORT);
     let mut cache = Cache::create_memory_cache(None, 10).unwrap();
     let _res = cache

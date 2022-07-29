@@ -21,7 +21,7 @@ clean:
 	    || true
 	@docker network prune --force 1>/dev/null 2>/dev/null || true
 
-test: clean
+test:
 	@mkdir -p ./test_logs
 	@cargo test happy_path -- --nocapture || make -s fail
 

@@ -20,8 +20,8 @@ hyper = { version = "0.14.20", features = ["tcp", "client"] }
 tendermint = "0.23"
 cosmrs = { git = "https://github.com/cosmos/cosmos-rust", default-features = true, features = ["rpc"] }
 # PR to original repo is open to make JsonRpcRequest public, use fork for now
-axum-jrpc = { git = "https://github.com/cbrit/axum-jrpc", branch = "cbrit/public-request-type" }
-serde_json = "1.0.82"
+serde_json = { version = "1.0.82", features = ["raw_value"] }
+reqwest = { version = "0.11.11", features = ["json"] }
 
 [dependencies.abscissa_core]
 version = "0.6.0-rc.0"

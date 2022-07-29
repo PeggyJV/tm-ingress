@@ -19,6 +19,7 @@ mod commands;
 mod config;
 mod error;
 mod grpc;
+mod handlers;
 mod prelude;
 mod rpc;
 // mod reflection;

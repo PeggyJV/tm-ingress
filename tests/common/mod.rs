@@ -105,7 +105,7 @@ where
     match panic::catch_unwind(f) {
         Ok(result) => result,
         Err(cause) => {
-            // docker_cleanup(container_name);
+            docker_cleanup(container_name);
             panic::resume_unwind(cause);
         }
     };
@@ -156,7 +156,7 @@ where
 
     docker_run(&docker_args);
     test(sender_account).await;
-    // docker_cleanup(container_name);
+    docker_cleanup(container_name);
 }
 
 /// Wait for the node to produce the first block.

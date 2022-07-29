@@ -2,9 +2,8 @@ use std::net::SocketAddr;
 
 use abscissa_core::{Command, Runnable};
 use clap::Parser;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use crate::{prelude::*, rpc::relay_rpc};
+use crate::{prelude::*, rpc::serve};
 
 #[derive(Command, Debug, Parser)]
 pub struct StartCmd;
@@ -20,7 +19,7 @@ impl Runnable for StartCmd {
                 .parse()
                 .expect(format!("failed to parse address {}", config.rpc.address).as_str());
 
-            if let Err(err) = relay_rpc(&address).await {
+            if let Err(err) = serve(&address).await {
                 status_err!("server error: {}", err);
                 std::process::exit(1)
             }
