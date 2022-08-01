@@ -1,7 +1,7 @@
 use assay::assay;
 use common::{
-    exec_docker_command, poll_for_first_block, run_single_node_test, ACCOUNT_PREFIX, CHAIN_ID, DENOM, GRPC_PORT,
-    INGRESS_RPC_PORT,
+    exec_docker_command, poll_for_first_block, run_single_node_test, ACCOUNT_PREFIX, CHAIN_ID,
+    DENOM, GRPC_PORT, INGRESS_RPC_PORT,
 };
 use ocular::{
     account::AccountInfo,
@@ -21,10 +21,7 @@ mod common;
 fn happy_path() {
     // create docker network if it doesn't exist
     let network_name = "test-network";
-    let args = vec![
-        "create",
-        network_name
-    ];
+    let args = vec!["create", network_name];
     if !exec_docker_command("network", vec!["ls"]).contains(network_name) {
         exec_docker_command("network", args);
     }
@@ -40,37 +37,43 @@ fn happy_path() {
         "tmingress",
         "--net",
         network_name,
-        "tmingress:prebuilt"
+        "tmingress:prebuilt",
     ];
     docker_run(docker_args);
 
     let container_name = "happy-path";
 
-    run_single_node_test(container_name, Some(network_name), |sender_account: AccountInfo| async move {
-        let mut chain_client = init_test_chain_client().await;
+    run_single_node_test(
+        container_name,
+        Some(network_name),
+        |sender_account: AccountInfo| async move {
+            let mut chain_client = init_test_chain_client().await;
 
-        // wait for the chain or you will pull your hair out over a race condition
-        let temp_client = tendermint_rpc::HttpClient::new(format!("http://localhost:{}", RPC_PORT).as_str()).unwrap();
-        poll_for_first_block(&temp_client).await;
+            // wait for the chain or you will pull your hair out over a race condition
+            let temp_client =
+                tendermint_rpc::HttpClient::new(format!("http://localhost:{}", RPC_PORT).as_str())
+                    .unwrap();
+            poll_for_first_block(&temp_client).await;
 
-        let txm = chain_client.get_basic_tx_metadata().await.unwrap();
-        let recipient = AccountInfo::new("");
-        let response = chain_client
-            .send(
-                &sender_account,
-                &recipient.address(ACCOUNT_PREFIX).unwrap(),
-                Coin {
-                    amount: 100,
-                    denom: DENOM.to_string(),
-                },
-                Some(txm),
-            )
-            .await
-            .unwrap();
+            let txm = chain_client.get_basic_tx_metadata().await.unwrap();
+            let recipient = AccountInfo::new("");
+            let response = chain_client
+                .send(
+                    &sender_account,
+                    &recipient.address(ACCOUNT_PREFIX).unwrap(),
+                    Coin {
+                        amount: 100,
+                        denom: DENOM.to_string(),
+                    },
+                    Some(txm),
+                )
+                .await
+                .unwrap();
 
-        assert!(response.check_tx.code.is_ok(), "CheckTx error");
-        assert!(response.deliver_tx.code.is_ok(), "DeliverTx error");
-    });
+            assert!(response.check_tx.code.is_ok(), "CheckTx error");
+            assert!(response.deliver_tx.code.is_ok(), "DeliverTx error");
+        },
+    );
 }
 
 async fn init_test_chain_client() -> ChainClient {

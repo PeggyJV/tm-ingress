@@ -17,7 +17,7 @@ impl Runnable for StartCmd {
                 .rpc
                 .address
                 .parse()
-                .expect(format!("failed to parse address {}", config.rpc.address).as_str());
+                .unwrap_or_else(|_| panic!("failed to parse address {}", config.rpc.address));
 
             if let Err(err) = serve(&address).await {
                 status_err!("server error: {}", err);

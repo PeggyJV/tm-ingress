@@ -1,23 +1,18 @@
 use std::net::SocketAddr;
 
-use abscissa_core::{
-    tracing::log::{info},
-};
+use abscissa_core::tracing::log::info;
 use axum::{
-    http::{StatusCode},
+    http::StatusCode,
     response::{IntoResponse, Response},
     routing::{get, post},
     Router,
 };
 
-
 use serde::{Deserialize, Serialize};
 use serde_json::{value::RawValue, Value};
 use tower_http::trace::TraceLayer;
 
-use crate::{
-    handlers::{rpc_broadcast_tx_commit, root_rpc_handler, rpc_status},
-};
+use crate::handlers::{root_rpc_handler, rpc_broadcast_tx_commit, rpc_status};
 
 #[derive(Deserialize, Debug, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -78,7 +73,7 @@ impl JsonRpcResponse {
             jsonrpc: "2.0".to_string(),
             error: Some(JsonRpcError {
                 code: -32603,
-                message: format!("Internal error"),
+                message: "Internal error".to_string(),
                 data: None,
             }),
             result: None,
@@ -88,7 +83,7 @@ impl JsonRpcResponse {
 
 impl IntoResponse for JsonRpcResponse {
     fn into_response(self) -> Response {
-        if let Some(_) = &self.error {
+        if self.error.is_some() {
             // TO-DO: more accurate response codes depending on error type
             return (
                 StatusCode::BAD_REQUEST,
@@ -97,7 +92,7 @@ impl IntoResponse for JsonRpcResponse {
                 .into_response();
         }
 
-        return (StatusCode::OK, serde_json::ser::to_vec(&self).unwrap()).into_response();
+        (StatusCode::OK, serde_json::ser::to_vec(&self).unwrap()).into_response()
     }
 }
 
@@ -110,7 +105,7 @@ pub async fn serve(address: &SocketAddr) -> Result<(), hyper::Error> {
         .layer(TraceLayer::new_for_http());
 
     info!("listening at {}", &address);
-    axum::Server::bind(&address)
+    axum::Server::bind(address)
         .serve(app.into_make_service())
         .await
 }

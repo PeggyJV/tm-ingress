@@ -1,22 +1,29 @@
 use abscissa_core::tracing::log::{error, info};
 use abscissa_core::Application;
-use axum::{response::{Response, IntoResponse}, Json, http::HeaderValue};
+use axum::{
+    http::HeaderValue,
+    response::{IntoResponse, Response},
+    Json,
+};
 use cosmrs::tx::Raw;
-use hyper::{Request, body, Body, StatusCode, Method};
+use hyper::{body, Body, Method, Request, StatusCode};
 use reqwest::Url;
 use tendermint_rpc::{endpoint::broadcast::tx_commit, HttpClient};
 
-use crate::{prelude::APP, rpc::{JsonRpcResponse, JsonRpcRequest}};
+use crate::{
+    prelude::APP,
+    rpc::{JsonRpcRequest, JsonRpcResponse},
+};
 
 pub async fn execute_get(url: &str) -> Response {
-    reqwest::get(url).await
+    reqwest::get(url)
+        .await
         .unwrap()
         .text()
         .await
         .unwrap()
         .into_response()
 }
-
 
 pub async fn root_rpc_handler(req: Request<Body>) -> Response {
     let config = APP.config();
@@ -27,7 +34,7 @@ pub async fn root_rpc_handler(req: Request<Body>) -> Response {
     info!("body: {:?}", std::str::from_utf8(&body));
 
     // If not a JSON-RPC request, return the response of a GET at /
-    if http_method == Method::GET || body.len() == 0 {
+    if http_method == Method::GET || body.is_empty() {
         let client = reqwest::Client::new();
         let url = config.node.rpc.clone();
         headers.insert("Content-Type", HeaderValue::from_static("text/html"));
@@ -57,10 +64,9 @@ pub async fn root_rpc_handler(req: Request<Body>) -> Response {
     match request.method.as_str() {
         "status" | "broadcast_tx_commit" => {
             let client = reqwest::Client::new();
-            let url = Url::parse(&config.node.rpc.clone()).expect(&format!(
-                "failed to parse node RPC url: {}",
-                &config.node.rpc.clone()
-            ));
+            let url = Url::parse(&config.node.rpc.clone()).unwrap_or_else(|_| {
+                panic!("failed to parse node RPC url: {}", &config.node.rpc.clone())
+            });
             let host = url.host().unwrap();
             let port = url.port_or_known_default().unwrap();
             let request = match client
@@ -90,10 +96,9 @@ pub async fn root_rpc_handler(req: Request<Body>) -> Response {
                 .unwrap()
                 .into_response();
         }
-        _ => return JsonRpcResponse::method_not_found(request.id, request.method).into_response(),
+        _ => JsonRpcResponse::method_not_found(request.id, request.method).into_response(),
     }
 }
-
 
 pub async fn rpc_broadcast_tx_commit(
     mut req: Request<Body>,

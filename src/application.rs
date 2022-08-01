@@ -6,8 +6,8 @@ use abscissa_core::{
     config::{self, CfgCell},
     trace, Application, FrameworkError, StandardPaths,
 };
-use reqwest::Url;
 use abscissa_tokio::TokioComponent;
+use reqwest::Url;
 
 /// Application state
 pub static APP: AppCell<CosmosTxEndpointApp> = AppCell::new();
@@ -80,12 +80,14 @@ impl Application for CosmosTxEndpointApp {
 
         // Validate node RPC url
         let url = &self.config.read().node.rpc;
-        let url_parts = Url::parse(&url).expect(&format!(
-            "failed to parse node RPC url: {}",
-            url
-        ));
-        url_parts.host().expect(&format!("unable to determine node RPC port from url '{}'", url));
-        url_parts.port_or_known_default().expect(&format!("unable to parse node RPC host from url '{}'", url));
+        let url_parts =
+            Url::parse(url).unwrap_or_else(|_| panic!("failed to parse node RPC url: {}", url));
+        url_parts
+            .host()
+            .unwrap_or_else(|| panic!("unable to determine node RPC port from url '{}'", url));
+        url_parts
+            .port_or_known_default()
+            .unwrap_or_else(|| panic!("unable to parse node RPC host from url '{}'", url));
 
         Ok(())
     }

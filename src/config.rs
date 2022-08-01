@@ -22,18 +22,10 @@ impl Default for CosmosTxEndpointConfig {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct NodeSection {
     pub rpc: String,
-}
-
-impl Default for NodeSection {
-    fn default() -> Self {
-        Self {
-            rpc: String::default(),
-        }
-    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]

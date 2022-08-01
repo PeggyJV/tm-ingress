@@ -96,11 +96,16 @@ pub fn init_tokio_runtime() -> tokio::runtime::Runtime {
         .expect("Could not build tokio runtime")
 }
 
-pub(crate) fn run_single_node_test<Fut>(container_name: &str, network_name: Option<&str>, test: fn(AccountInfo) -> Fut)
-where
+pub(crate) fn run_single_node_test<Fut>(
+    container_name: &str,
+    network_name: Option<&str>,
+    test: fn(AccountInfo) -> Fut,
+) where
     Fut: Future<Output = ()>,
 {
-    let f = || init_tokio_runtime().block_on(async { surround(container_name, network_name, test).await });
+    let f = || {
+        init_tokio_runtime().block_on(async { surround(container_name, network_name, test).await })
+    };
 
     match panic::catch_unwind(f) {
         Ok(result) => result,
@@ -151,7 +156,7 @@ where
             DOCKER_HUB_GAIA_SINGLE_NODE_TEST_IMAGE,
             CHAIN_ID,
             &sender_address,
-        ]
+        ],
     };
 
     docker_run(&docker_args);
