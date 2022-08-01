@@ -1,5 +1,0 @@
-[node]
-rpc = "http://happy-path:26657"
-
-[rpc]
-address = "0.0.0.0:26655"
