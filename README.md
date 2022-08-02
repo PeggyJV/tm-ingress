@@ -28,6 +28,11 @@ or with `cargo`
 cargo run -- --config config.toml start
 ```
 
+## Future Work
+
+- Make Cosmin aware of the validator node's config so that it can validate TXs before relaying
+- Middleware
+
 ## Happy Path
 
 The `happy_path` test will demonstrate the process receiving and relaying a simple `MsgSend` transaction to a single-node test chain. It spins up two docker containers: one that runs the `cosmin` process on the host port 26655, and one that runs the chain. They are created in the same docker network so that they can communicate by container name (`cosmin` will send requests to http://happy-path:26657). The host machine acts as the client sending a transaction from within the test itself, which can be found in `./tests/happy_path.rs`.
