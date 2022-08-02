@@ -26,7 +26,7 @@ fn happy_path() {
         exec_docker_command("network", args);
     }
 
-    // run tmingress container in the network
+    // run cosmin container in the network
     let rpc_binding = &format!("{}:{}", INGRESS_RPC_PORT, INGRESS_RPC_PORT);
     let docker_args = vec![
         "-d",
@@ -34,10 +34,10 @@ fn happy_path() {
         rpc_binding,
         "--rm",
         "--name",
-        "tmingress",
+        "cosmin",
         "--net",
         network_name,
-        "tmingress:prebuilt",
+        "cosmin:prebuilt",
     ];
     docker_run(docker_args);
 

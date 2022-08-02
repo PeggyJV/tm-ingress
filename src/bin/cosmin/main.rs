@@ -3,7 +3,7 @@
 #![deny(warnings, missing_docs, trivial_casts, unused_qualifications)]
 #![forbid(unsafe_code)]
 
-use tm_ingress::application::APP;
+use cosmin::application::APP;
 
 /// Boot CosmosTxEndpoint
 fn main() {

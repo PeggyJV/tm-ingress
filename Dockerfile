@@ -24,10 +24,10 @@ COPY . .
 # Copy over the cached dependencies
 COPY --from=cacher /app/target target
 COPY --from=cacher /usr/local/cargo /usr/local/cargo
-RUN cargo build --release --bin tmingress
+RUN cargo build --release --bin cosmin
 
 FROM cargo-chef-rust as runtime
 WORKDIR app
 COPY config.toml config.toml
-COPY --from=builder /app/target/release/tmingress /usr/local/bin
-CMD RUST_LOG=debug tmingress --config config.toml start
+COPY --from=builder /app/target/release/cosmin /usr/local/bin
+CMD RUST_LOG=debug cosmin --config config.toml start

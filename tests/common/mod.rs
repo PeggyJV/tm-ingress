@@ -7,7 +7,7 @@ use ocular::account::AccountInfo;
 use tendermint_rpc::Client;
 
 /// Chain ID to use for tests
-pub const CHAIN_ID: &str = "tmingress-test";
+pub const CHAIN_ID: &str = "cosmin-test";
 
 /// Gas
 pub const MULTISEND_BASE_GAS_APPROX: u64 = 60000;

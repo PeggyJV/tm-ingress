@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := build
 
 INGRESS_RPC_PORT := 26655
-NAME := "tmingress"
+NAME := "cosmin"
 
 build:
 	@docker build -t $(NAME):prebuilt -f Dockerfile .
