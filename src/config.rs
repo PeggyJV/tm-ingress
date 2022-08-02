@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
-pub struct CosmosTxEndpointConfig {
+pub struct CosminConfig {
     pub max_request_threads: usize,
     pub max_tx_batch_size: u64,
     pub request_timeout_secs: u64,
@@ -10,7 +10,7 @@ pub struct CosmosTxEndpointConfig {
     pub rpc: RpcSection,
 }
 
-impl Default for CosmosTxEndpointConfig {
+impl Default for CosminConfig {
     fn default() -> Self {
         Self {
             max_request_threads: 4,

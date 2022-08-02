@@ -1,4 +1,4 @@
-//! CosmosTxEndpoint Subcommands
+//! Cosmin Subcommands
 //!
 //! This is where you specify the subcommands of your application.
 //!
@@ -13,18 +13,18 @@
 mod start;
 
 use self::start::StartCmd;
-use crate::config::CosmosTxEndpointConfig;
+use crate::config::CosminConfig;
 use abscissa_core::{Command, Configurable, Runnable};
 use clap::Parser;
 use std::path::PathBuf;
 
-/// CosmosTxEndpoint Configuration Filename
-pub const CONFIG_FILE: &str = "cosmos_tx_endpoint.toml";
+/// Cosmin Configuration Filename
+pub const CONFIG_FILE: &str = "config.toml";
 
-/// CosmosTxEndpoint Subcommands
+/// Cosmin Subcommands
 /// Subcommands need to be listed in an enum.
 #[derive(Command, Debug, Parser, Runnable)]
-pub enum CosmosTxEndpointCmd {
+pub enum CosminCmd {
     /// The `start` subcommand
     Start(StartCmd),
 }
@@ -34,7 +34,7 @@ pub enum CosmosTxEndpointCmd {
 #[clap(author, about, version)]
 pub struct EntryPoint {
     #[clap(subcommand)]
-    cmd: CosmosTxEndpointCmd,
+    cmd: CosminCmd,
 
     /// Enable verbose logging
     #[clap(short, long)]
@@ -52,23 +52,13 @@ impl Runnable for EntryPoint {
 }
 
 /// This trait allows you to define how application configuration is loaded.
-impl Configurable<CosmosTxEndpointConfig> for EntryPoint {
+impl Configurable<CosminConfig> for EntryPoint {
     /// Location of the configuration file
     fn config_path(&self) -> Option<PathBuf> {
         // Check if the config file exists, and if it does not, ignore it.
         // If you'd like for a missing configuration file to be a hard error
         // instead, always return `Some(CONFIG_FILE)` here.
-        let filename = self
-            .config
-            .as_ref()
-            .map(PathBuf::from)
-            .unwrap_or_else(|| CONFIG_FILE.into());
-
-        if filename.exists() {
-            Some(filename)
-        } else {
-            None
-        }
+        Some(CONFIG_FILE.into())
     }
 
     // /// Apply changes to the config after it's been loaded, e.g. overriding
@@ -78,10 +68,10 @@ impl Configurable<CosmosTxEndpointConfig> for EntryPoint {
     // /// settings from command-line options.
     // fn process_config(
     //     &self,
-    //     config: CosmosTxEndpointConfig,
-    // ) -> Result<CosmosTxEndpointConfig, FrameworkError> {
+    //     config: CosminConfig,
+    // ) -> Result<CosminConfig, FrameworkError> {
     //     match &self.cmd {
-    //         CosmosTxEndpointCmd::Start(cmd) => cmd.override_config(config),
+    //         CosminCmd::Start(cmd) => cmd.override_config(config),
     //         //
     //         // If you don't need special overrides for some
     //         // subcommands, you can just use a catch all

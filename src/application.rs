@@ -1,6 +1,6 @@
-//! CosmosTxEndpoint Abscissa Application
+//! Cosmin Abscissa Application
 
-use crate::{commands::EntryPoint, config::CosmosTxEndpointConfig};
+use crate::{commands::EntryPoint, config::CosminConfig};
 use abscissa_core::{
     application::{self, AppCell},
     config::{self, CfgCell},
@@ -10,13 +10,13 @@ use abscissa_tokio::TokioComponent;
 use reqwest::Url;
 
 /// Application state
-pub static APP: AppCell<CosmosTxEndpointApp> = AppCell::new();
+pub static APP: AppCell<CosminApp> = AppCell::new();
 
-/// CosmosTxEndpoint Application
+/// Cosmin Application
 #[derive(Debug)]
-pub struct CosmosTxEndpointApp {
+pub struct CosminApp {
     /// Application configuration.
-    config: CfgCell<CosmosTxEndpointConfig>,
+    config: CfgCell<CosminConfig>,
 
     /// Application state.
     state: application::State<Self>,
@@ -26,7 +26,7 @@ pub struct CosmosTxEndpointApp {
 ///
 /// By default no configuration is loaded, and the framework state is
 /// initialized to a default, empty state (no components, threads, etc).
-impl Default for CosmosTxEndpointApp {
+impl Default for CosminApp {
     fn default() -> Self {
         Self {
             config: CfgCell::default(),
@@ -35,18 +35,18 @@ impl Default for CosmosTxEndpointApp {
     }
 }
 
-impl Application for CosmosTxEndpointApp {
+impl Application for CosminApp {
     /// Entrypoint command for this application.
     type Cmd = EntryPoint;
 
     /// Application configuration.
-    type Cfg = CosmosTxEndpointConfig;
+    type Cfg = CosminConfig;
 
     /// Paths to resources within the application.
     type Paths = StandardPaths;
 
     /// Accessor for application configuration.
-    fn config(&self) -> config::Reader<CosmosTxEndpointConfig> {
+    fn config(&self) -> config::Reader<CosminConfig> {
         self.config.read()
     }
 

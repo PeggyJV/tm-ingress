@@ -16,6 +16,7 @@ use crate::handlers::{root_rpc_handler, rpc_broadcast_tx_commit, rpc_status};
 
 #[derive(Deserialize, Debug, Serialize)]
 #[serde(deny_unknown_fields)]
+/// Represent a JSON-RPC request object. For more information see https://www.jsonrpc.org/specification#request_object
 pub struct JsonRpcRequest {
     pub id: Value,
     pub jsonrpc: String,
@@ -25,6 +26,7 @@ pub struct JsonRpcRequest {
 
 #[derive(Deserialize, Debug, Serialize)]
 #[serde(deny_unknown_fields)]
+/// Represents a JSON-RPC response object. For more inforamation see https://www.jsonrpc.org/specification#response_object
 pub struct JsonRpcResponse {
     pub id: Option<Value>,
     pub jsonrpc: String,
@@ -34,6 +36,7 @@ pub struct JsonRpcResponse {
 
 #[derive(Deserialize, Debug, Serialize)]
 #[serde(deny_unknown_fields)]
+/// Represents the `error` struct field of a response
 pub struct JsonRpcError {
     pub code: i64,
     pub message: String,
@@ -41,6 +44,7 @@ pub struct JsonRpcError {
 }
 
 impl JsonRpcResponse {
+    /// Represents error caused by a JSON-RPC request that could not be parsed
     pub fn parse_error() -> Self {
         JsonRpcResponse {
             id: None,
@@ -54,6 +58,7 @@ impl JsonRpcResponse {
         }
     }
 
+    /// Represents an error caused by the request sending an unrecognized `method` field
     pub fn method_not_found(id: Value, method: String) -> Self {
         JsonRpcResponse {
             id: Some(id),
@@ -67,6 +72,7 @@ impl JsonRpcResponse {
         }
     }
 
+    /// Represents an error caused by some operation internal to the server
     pub fn internal_error(id: Value) -> Self {
         JsonRpcResponse {
             id: Some(id),
@@ -96,7 +102,7 @@ impl IntoResponse for JsonRpcResponse {
     }
 }
 
-/// Runs the rpc server
+/// Defines server routes, assigns them handlers, and runs the RPC server
 pub async fn serve(address: &SocketAddr) -> Result<(), hyper::Error> {
     let app = Router::new()
         .route("/", get(root_rpc_handler).post(root_rpc_handler))

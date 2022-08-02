@@ -19,6 +19,7 @@ impl Runnable for StartCmd {
                 .parse()
                 .unwrap_or_else(|_| panic!("failed to parse address {}", config.rpc.address));
 
+            // start the server
             if let Err(err) = serve(&address).await {
                 status_err!("server error: {}", err);
                 std::process::exit(1)
@@ -30,19 +31,3 @@ impl Runnable for StartCmd {
         });
     }
 }
-
-// impl config::Override<CosmosTxEndpointConfig> for StartCmd {
-//     // Process the given command line options, overriding settings from
-//     // a configuration file using explicit flags taken from command-line
-//     // arguments.
-//     fn override_config(
-//         &self,
-//         mut config: CosmosTxEndpointConfig,
-//     ) -> Result<CosmosTxEndpointConfig, FrameworkError> {
-//         if !self.recipient.is_empty() {
-//             config.hello.recipient = self.recipient.join(" ");
-//         }
-
-//         Ok(config)
-//     }
-// }

@@ -1,4 +1,4 @@
-//! CosmosTxEndpoint
+//! Cosmin
 //!
 //! Application based on the [Abscissa] framework.
 //!
@@ -18,8 +18,6 @@ pub mod application;
 mod commands;
 mod config;
 mod error;
-mod grpc;
 mod handlers;
 mod prelude;
 mod rpc;
-// mod reflection;

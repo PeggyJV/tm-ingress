@@ -7,6 +7,3 @@ pub use abscissa_core::prelude::*;
 
 /// Application state
 pub use crate::application::APP;
-
-// pub(crate) use crate::grpc::*;
-// pub(crate) use crate::reflection::*;

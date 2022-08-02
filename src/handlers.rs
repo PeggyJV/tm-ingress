@@ -15,6 +15,7 @@ use crate::{
     rpc::{JsonRpcRequest, JsonRpcResponse},
 };
 
+/// Helper method for
 pub async fn execute_get(url: &str) -> Response {
     reqwest::get(url)
         .await
@@ -25,6 +26,9 @@ pub async fn execute_get(url: &str) -> Response {
         .into_response()
 }
 
+/// Handler for the root endpoint. This is the JSON-RPC handler. GET requests with no body will be responded
+/// to with API documentation HTML, otherwise attempts to parse the request as a JsonRpcRequest and forward
+/// it to the validator node.
 pub async fn root_rpc_handler(req: Request<Body>) -> Response {
     let config = APP.config();
     info!("request: {:?}", req);
@@ -100,6 +104,7 @@ pub async fn root_rpc_handler(req: Request<Body>) -> Response {
     }
 }
 
+/// Handler for requests to the /broadcast_tx_commit endpoint
 pub async fn rpc_broadcast_tx_commit(
     mut req: Request<Body>,
 ) -> Result<Json<tx_commit::Response>, StatusCode> {
@@ -113,6 +118,7 @@ pub async fn rpc_broadcast_tx_commit(
     Ok(Json(tx.broadcast_commit(&client).await.unwrap()))
 }
 
+/// Handler for requests to the /status endpoint
 pub async fn rpc_status(_: Request<Body>) -> Response {
     let config = APP.config();
     let mut url = config.node.rpc.clone();
