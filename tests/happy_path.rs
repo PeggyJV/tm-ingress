@@ -20,6 +20,7 @@ mod common;
 #[assay]
 fn happy_path() {
     // create docker network if it doesn't exist
+    println!("Creating Docker network 'test-network'");
     let network_name = "test-network";
     let args = vec!["create", network_name];
     if !exec_docker_command("network", vec!["ls"]).contains(network_name) {
@@ -27,6 +28,7 @@ fn happy_path() {
     }
 
     // run cosmin container in the network
+    println!("Starting the Cosmin container");
     let rpc_binding = &format!("{}:{}", INGRESS_RPC_PORT, INGRESS_RPC_PORT);
     let docker_args = vec![
         "-d",
@@ -53,10 +55,14 @@ fn happy_path() {
             let temp_client =
                 tendermint_rpc::HttpClient::new(format!("http://localhost:{}", RPC_PORT).as_str())
                     .unwrap();
+
+            println!("Waiting for the chain to create the first block");
             poll_for_first_block(&temp_client).await;
 
+            println!("Querying /status for account sequence");
             let txm = chain_client.get_basic_tx_metadata().await.unwrap();
             let recipient = AccountInfo::new("");
+            println!("Sending Bank::MsgSend transaction!");
             let response = chain_client
                 .send(
                     &sender_account,
@@ -72,6 +78,8 @@ fn happy_path() {
 
             assert!(response.check_tx.code.is_ok(), "CheckTx error");
             assert!(response.deliver_tx.code.is_ok(), "DeliverTx error");
+
+            println!("CheckTx and DeliverTx completed successfully!");
         },
     );
 }

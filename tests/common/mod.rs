@@ -125,7 +125,7 @@ where
     let sender_address = sender_account.address(ACCOUNT_PREFIX).unwrap();
 
     println!("Sender address: {}", sender_address);
-
+    println!("Starting the chain node container");
     let rpc_binding = &format!("{}:{}", RPC_PORT, RPC_PORT);
     let grpc_binding = &format!("{}:{}", 9090, 9090);
     let docker_args = match network_name {
